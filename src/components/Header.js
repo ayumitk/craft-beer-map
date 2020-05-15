@@ -72,7 +72,7 @@ const Header = () => {
             <SearchIcon />
           </div>
           <InputBase
-            placeholder="Searchâ€¦"
+            placeholder="Search..."
             classes={{
               root: classes.inputRoot,
               input: classes.inputInput,
