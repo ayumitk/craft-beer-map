@@ -11,11 +11,13 @@ import {
   Link,
   Paper,
   MenuItem,
+  IconButton,
 } from '@material-ui/core'
 import { Link as RouterLink } from 'react-router-dom'
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete'
 import { connect } from 'react-redux'
 import { inputAddress } from '../store/actions/inputAction'
+import beer from '../beer.svg'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,14 +26,33 @@ const useStyles = makeStyles((theme) => ({
     position: `fixed`,
     top: 0,
   },
+  toolbar: {
+    [theme.breakpoints.down('sm')]: {
+      padding: 0,
+    },
+  },
   title: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      marginLeft: theme.spacing(2),
+    },
+    '& a': {
+      display: `flex`,
+    },
+    '& span': {
+      display: 'none',
+      [theme.breakpoints.up('md')]: {
+        display: 'block',
+      },
     },
     '& a:hover': {
       textDecoration: `none`,
     },
+  },
+  logo: {
+    width: `1.5rem`,
+    verticalAlign: `sub`,
+    marginRight: theme.spacing(0.5),
   },
   search: {
     flexGrow: 1,
@@ -40,13 +61,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: fade(theme.palette.common.white, 0.15),
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto',
     },
   },
   searchIcon: {
@@ -75,6 +89,19 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     width: `100%`,
   },
+  createBtnLg: {
+    display: 'none',
+    [theme.breakpoints.up('md')]: {
+      marginLeft: theme.spacing(2),
+      display: 'block',
+    },
+  },
+  createBtnSm: {
+    display: 'none',
+    [theme.breakpoints.down('sm')]: {
+      display: 'block',
+    },
+  },
 }))
 
 const Header = ({ latLng, inputAddress }) => {
@@ -96,10 +123,11 @@ const Header = ({ latLng, inputAddress }) => {
   return (
     <>
       <AppBar position="static" className={classes.root}>
-        <Toolbar>
+        <Toolbar className={classes.toolbar}>
           <Typography className={classes.title} variant="h6" noWrap>
             <Link component={RouterLink} to="/" color="inherit">
-              Vancouver Brewery Map
+              <img src={beer} alt="beer" className={classes.logo} />
+              <span>Vancouver Brewery Map</span>
             </Link>
           </Typography>
           <div className={classes.search}>
@@ -135,10 +163,13 @@ const Header = ({ latLng, inputAddress }) => {
               )}
             </PlacesAutocomplete>
           </div>
-          <Button variant="contained" component={RouterLink} to="/create">
-            <AddIcon />
+          <Button variant="contained" component={RouterLink} to="/create" className={classes.createBtnLg}>
+            <AddIcon style={{ verticalAlign: `top` }} />
             Add Brewery
           </Button>
+          <IconButton aria-label="Add Brewery" component={RouterLink} to="/create" className={classes.createBtnSm}>
+            <AddIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </>
