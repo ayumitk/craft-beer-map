@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import GoogleMapReact from 'google-map-react'
 import { Room as RoomIcon, Close as CloseIcon, Public as PublicIcon } from '@material-ui/icons'
-import { makeStyles, Paper, Typography, IconButton, Link, CircularProgress } from '@material-ui/core'
+import { makeStyles, Paper, Typography, IconButton, Link } from '@material-ui/core'
 import { Link as RouterLink } from 'react-router-dom'
 import { usePosition } from 'use-position'
+import { connect } from 'react-redux'
 import createMapOptions from '../styles/map'
 import Switch from './Switch'
+import { inputAddress } from '../store/actions/inputAction'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
     display: `flex`,
     justifyContent: `center`,
     alignItems: `center`,
+    marginTop: `64px`,
   },
   popover: {
     width: `250px`,
@@ -64,24 +67,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const BreweryMap = (props) => {
+const BreweryMap = ({ data, latLng, inputAddress }) => {
   const classes = useStyles()
-  const { data } = props
+
   const [currentId, setCurrentId] = useState(null)
 
-  const [userLat, setUserLat] = useState(null)
-  const [userLng, setUserLng] = useState(null)
-  const { latitude, longitude, error } = usePosition()
+  const { latitude, longitude } = usePosition()
 
   useEffect(() => {
     if (latitude && longitude) {
-      setUserLat(latitude)
-      setUserLng(longitude)
-    } else if (error) {
-      setUserLat(49.2754041)
-      setUserLng(-123.1248643)
+      const newLatLng = {
+        lat: latitude,
+        lng: longitude,
+      }
+      inputAddress(newLatLng)
     }
-  }, [latitude, longitude, error])
+  }, [latitude, longitude, inputAddress])
 
   const changeBalloon = (id) => {
     const targetId = Number(id)
@@ -129,26 +130,27 @@ const BreweryMap = (props) => {
   return (
     <>
       <div className={classes.root}>
-        {userLat && userLng ? (
-          <GoogleMapReact
-            bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAP_API_KEY }}
-            defaultCenter={{
-              lat: userLat,
-              lng: userLng,
-            }}
-            defaultZoom={14}
-            options={createMapOptions}
-            onChildClick={(key) => changeBalloon(key)}
-          >
-            {beerLocations}
-          </GoogleMapReact>
-        ) : (
-          <CircularProgress />
-        )}
+        <GoogleMapReact
+          bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAP_API_KEY }}
+          defaultZoom={14}
+          options={createMapOptions}
+          onChildClick={(key) => changeBalloon(key)}
+          center={latLng}
+        >
+          {beerLocations}
+        </GoogleMapReact>
       </div>
       <Switch currentView="map" />
     </>
   )
 }
 
-export default BreweryMap
+const mapStateToProps = ({ latLng }) => ({ latLng })
+
+const mapDispatchToProps = (dispatch) => ({
+  inputAddress(latLng) {
+    dispatch(inputAddress(latLng))
+  },
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(BreweryMap)

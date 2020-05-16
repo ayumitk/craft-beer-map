@@ -5,7 +5,9 @@ import { Link as RouterLink } from 'react-router-dom'
 import Switch from './Switch'
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    marginTop: `64px`,
+  },
   summary: {
     marginBottom: theme.spacing(1),
   },
@@ -32,7 +34,7 @@ const BreweryList = (props) => {
   const classes = useStyles()
   const { data } = props
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" className={classes.root}>
       <Typography className={classes.result}>{data.length} Breweries</Typography>
       {data.map((brewery) => (
         <Card className={classes.summary} key={brewery.id}>
